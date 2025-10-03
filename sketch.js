@@ -117,6 +117,15 @@ function draw(){
   }
 }
 
+// in setup() or once on load
+document.addEventListener('pointermove', (e)=>{
+  const x = (e.clientX / innerWidth) * 100;
+  const y = (e.clientY / innerHeight) * 100;
+  document.documentElement.style.setProperty('--gx', `${x}%`);
+  document.documentElement.style.setProperty('--gy', `${y}%`);
+});
+
+
 /* ---------- Drawing ---------- */
 
 // Give more headroom between era labels and icons
