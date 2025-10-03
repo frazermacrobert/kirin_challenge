@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Memory Walk — Kirin</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- p5.js for simple drawing & interaction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js" defer></script>
+  <script src="sketch.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1>Memory Walk — Kirin</h1>
+    <div class="stats" aria-live="polite">
+      <span id="kmStat">0 / 0 km</span>
+      <span id="yearStat">Current year —</span>
+    </div>
+    <div class="hint">Use ← / → to step. Hover milestones.</div>
+  </header>
+
+  <main>
+    <!-- p5 canvas renders the timeline -->
+    <div id="canvas-holder"></div>
+  </main>
+
+  <!-- Controls -->
+  <div class="controls">
+    <label for="kmSlider" class="sr-only">Progress in kilometers</label>
+    <input id="kmSlider" type="range" min="0" step="1" aria-label="Progress in kilometers" />
+    <div class="control-buttons">
+      <button id="decBtn" aria-label="Minus one kilometer">−</button>
+      <button id="incBtn" aria-label="Plus one kilometer">+</button>
+    </div>
+  </div>
+
+  <!-- Milestone popover -->
+  <div id="popover" class="popover hidden" role="dialog" aria-modal="false" aria-live="polite">
+    <div class="pop-title" id="popTitle"></div>
+    <div class="pop-body" id="popBody"></div>
+  </div>
+</body>
+</html>
