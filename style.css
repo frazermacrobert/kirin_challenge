@@ -111,6 +111,17 @@ main{padding:16px 14px 140px}
 .focus{ animation: neonPulse 3.5s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce){ .focus{ animation:none; } }
 
+/* Use CSS vars for hotspot positions */
+:root{ --gx:50%; --gy:55%; }
+.bg{
+  background:
+    radial-gradient(900px 520px at calc(var(--gx)) calc(var(--gy)), rgba(255,150,40,.35), transparent 60%),
+    radial-gradient(1100px 640px at 60% 55%, rgba(255,45,154,.45), transparent 62%),
+    linear-gradient(180deg, #130e18, #0b0f19);
+  filter: saturate(115%) contrast(105%);
+}
+
+
 
 /* A11y helper */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
