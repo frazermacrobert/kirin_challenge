@@ -16,7 +16,7 @@ const milestones = [
   { year:627,  label:"First York Minster",         icon:"⛪", caption:"Foundations of worship and wonder.", image:"" },
   { year:866,  label:"Viking Invasion",            icon:"🛶", caption:"Granddad’s dock stories.", image:"" },
   { year:1068, label:"York Castle built",          icon:"🏰", caption:"Stone, strategy, and a new order.", image:"" },
-  { year:1212, label:"Minster fire",               icon:"🔥", caption:"Rebuilding resilience.", image:"" },
+  { year:1212, label:"Minster fire",               icon:"🔥", caption:"Rebuilding resilience.", image:"assets/1212.png" },
   { year:1349, label:"Black Death",                icon:"☠️", caption:"Empty streets and echoes.", image:"" },
   { year:1485, label:"Wars of the Roses end",      icon:"🌹", caption:"The city’s fortunes change again.", image:"" },
   { year:1644, label:"Siege of York",              icon:"🛡️", caption:"Holding the line in civil war.", image:"" },
