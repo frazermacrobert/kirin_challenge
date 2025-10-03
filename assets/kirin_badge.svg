@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256">
+  <defs>
+    <radialGradient id="g" cx="30%" cy="30%">
+      <stop offset="0%" stop-color="#ffd8a8"/>
+      <stop offset="60%" stop-color="#e67a9e"/>
+      <stop offset="100%" stop-color="#ff1493"/>
+    </radialGradient>
+  </defs>
+  <rect width="256" height="256" rx="36" fill="none"/>
+  <circle cx="128" cy="96" r="60" fill="none" stroke="#ff1493" stroke-width="8" opacity="0.95"/>
+  <!-- stylized horn -->
+  <path d="M130 36 L150 12 L140 36 Z" fill="#ff1493" opacity="0.95"/>
+  <!-- simple unicorn head silhouette -->
+  <path d="M92 102c14-22 46-28 66-8 20 20 6 46-18 56-24 10-48 2-62-20-6-8-8-16-6-28z" fill="#d48b5a" opacity="0.95"/>
+  <text x="128" y="202" font-family="Segoe UI, Roboto, Arial" font-size="34" text-anchor="middle" fill="#fff">KIRIN</text>
+</svg>
