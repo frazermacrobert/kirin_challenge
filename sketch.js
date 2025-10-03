@@ -1,34 +1,33 @@
-// Memory Walk — Kirin (screenshot-style neon build)
+// Memory Walk — Kirin (UI fixes: no auto, hover-only card, extra spacing)
 
-let startYear = 70;           // keep 1955 total
+let startYear = 70;
 let endYear   = 2025;
 let totalKm   = endYear - startYear; // 1955
 let progressKm = 0;
 let walkers = 10;
 
-const STORAGE_KEY = 'kirin_progress_km_v3';
-let simTimer = null;
+const STORAGE_KEY = 'kirin_progress_km_ui_fixes';
 
-// Milestones (with optional image + caption)
+// Milestones (same list as before, image optional)
 const milestones = [
-  { year:71,   label:"Eboracum founded",           icon:"🏛️", caption:"York begins.",                                 image:"" },
-  { year:208,  label:"Death of Septimius Severus", icon:"🪦", caption:"Power shifts in the North.",                     image:"" },
-  { year:306,  label:"Constantine proclaimed",     icon:"👑", caption:"A turning point for empire and faith.",         image:"" },
-  { year:627,  label:"First York Minster",         icon:"⛪", caption:"Foundations of worship and wonder.",             image:"" },
-  { year:866,  label:"Viking Invasion",            icon:"🛶", caption:"Granddad’s dock stories.",                       image:"https://images.unsplash.com/photo-1526404803658-54a7f9b2b9b6?auto=format&fit=crop&w=800&q=60" },
-  { year:1068, label:"York Castle built",          icon:"🏰", caption:"Stone, strategy, and a new order.",              image:"" },
-  { year:1212, label:"Minster fire",               icon:"🔥", caption:"Rebuilding resilience.",                        image:"" },
-  { year:1349, label:"Black Death",                icon:"☠️", caption:"Empty streets and echoes.",                     image:"" },
-  { year:1485, label:"Wars of the Roses end",      icon:"🌹", caption:"The city’s fortunes change again.",             image:"" },
-  { year:1644, label:"Siege of York",              icon:"🛡️", caption:"Holding the line in civil war.",                image:"" },
-  { year:1839, label:"Railway station opens",      icon:"🚂", caption:"York accelerates.",                             image:"" },
-  { year:1932, label:"Chocolate Orange launched",  icon:"🍫", caption:"A sweet spot in history.",                      image:"" },
-  { year:1984, label:"Jorvik Centre opens",        icon:"🛶", caption:"Dig, discover, delight.",                       image:"" },
-  { year:2001, label:"Fairtrade City",             icon:"🤝", caption:"Doing business better.",                         image:"" },
-  { year:2025, label:"Challenge complete!",        icon:"🎉", caption:"You made it to the present day!",               image:"" }
+  { year:71,   label:"Eboracum founded",           icon:"🏛️", caption:"York begins.", image:"" },
+  { year:208,  label:"Death of Septimius Severus", icon:"🪦", caption:"Power shifts in the North.", image:"" },
+  { year:306,  label:"Constantine proclaimed",     icon:"👑", caption:"A turning point for empire and faith.", image:"" },
+  { year:627,  label:"First York Minster",         icon:"⛪", caption:"Foundations of worship and wonder.", image:"" },
+  { year:866,  label:"Viking Invasion",            icon:"🛶", caption:"Granddad’s dock stories.", image:"" },
+  { year:1068, label:"York Castle built",          icon:"🏰", caption:"Stone, strategy, and a new order.", image:"" },
+  { year:1212, label:"Minster fire",               icon:"🔥", caption:"Rebuilding resilience.", image:"" },
+  { year:1349, label:"Black Death",                icon:"☠️", caption:"Empty streets and echoes.", image:"" },
+  { year:1485, label:"Wars of the Roses end",      icon:"🌹", caption:"The city’s fortunes change again.", image:"" },
+  { year:1644, label:"Siege of York",              icon:"🛡️", caption:"Holding the line in civil war.", image:"" },
+  { year:1839, label:"Railway station opens",      icon:"🚂", caption:"York accelerates.", image:"" },
+  { year:1932, label:"Chocolate Orange launched",  icon:"🍫", caption:"A sweet spot in history.", image:"" },
+  { year:1984, label:"Jorvik Centre opens",        icon:"🛶", caption:"Dig, discover, delight.", image:"" },
+  { year:2001, label:"Fairtrade City",             icon:"🤝", caption:"Doing business better.", image:"" },
+  { year:2025, label:"Challenge complete!",        icon:"🎉", caption:"You made it to the present day!", image:"" }
 ];
 
-// Era bands (labels only)
+// Era bands (labels higher up for breathing room)
 const eras = [
   { label:"Romans",           icon:"🏛️", from:71,   to:410 },
   { label:"Vikings & Early",  icon:"⚔️", from:627,  to:1068 },
@@ -37,11 +36,14 @@ const eras = [
   { label:"Chocolate & Now",  icon:"🍫", from:1932, to:2025 }
 ];
 
-// layout
+// layout + controls
 let timelineY;
 let leftX, rightX;
+let sliderEl, decBtn, incBtn, addForm, addInput, resetBtn;
 
-let sliderEl, decBtn, incBtn, addForm, addInput, resetBtn, simBtn;
+// hover tracking
+let hoveredMilestone = null;
+let lastAnchorX = null;
 
 function setup(){
   const holder = document.getElementById('canvas-holder');
@@ -54,20 +56,18 @@ function setup(){
   leftX  = 60;
   rightX = width - 60;
 
-  // controls
-  sliderEl = document.getElementById('kmSlider');
-  decBtn   = document.getElementById('decBtn');
-  incBtn   = document.getElementById('incBtn');
-  simBtn   = document.getElementById('simBtn');
-  addForm  = document.getElementById('toolbar');
-  addInput = document.getElementById('addInput');
-  resetBtn = document.getElementById('resetBtn');
-
   // restore
   const saved = parseInt(localStorage.getItem(STORAGE_KEY) || "0", 10);
   progressKm = constrain(isNaN(saved)?0:saved, 0, totalKm);
 
-  // slider
+  // controls
+  sliderEl = document.getElementById('kmSlider');
+  decBtn   = document.getElementById('decBtn');
+  incBtn   = document.getElementById('incBtn');
+  addForm  = document.getElementById('toolbar');
+  addInput = document.getElementById('addInput');
+  resetBtn = document.getElementById('resetBtn');
+
   sliderEl.max = totalKm;
   sliderEl.value = progressKm;
   ['input','change'].forEach(evt => {
@@ -81,7 +81,6 @@ function setup(){
   decBtn.addEventListener('click', () => adjustProgress(-1));
   incBtn.addEventListener('click', () => adjustProgress(+1));
 
-  // Add km (form submit; supports negatives)
   addForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const n = parseInt(addInput.value, 10);
@@ -93,16 +92,6 @@ function setup(){
 
   resetBtn.addEventListener('click', () => { progressKm = 0; syncControls(); updateUI(); });
 
-  // Sim slider toggle
-  simBtn.addEventListener('click', () => {
-    if (simTimer){ clearInterval(simTimer); simTimer = null; simBtn.classList.remove('active'); return; }
-    simBtn.classList.add('active');
-    simTimer = setInterval(() => {
-      if (progressKm >= totalKm){ clearInterval(simTimer); simTimer = null; simBtn.classList.remove('active'); return; }
-      adjustProgress(+1);
-    }, 55);
-  });
-
   updateUI();
 }
 
@@ -111,7 +100,6 @@ function windowResized(){
   resizeCanvas(w, height);
   leftX  = 60;
   rightX = width - 60;
-  positionFocusCard(); // keep card aligned on resize
 }
 
 function draw(){
@@ -120,10 +108,21 @@ function draw(){
   drawTimelineNeon();
   drawMilestones();
   drawProgressKnob();
-  positionFocusCard(); // keep HTML card anchored to the timeline
+
+  // show/hide focus card based on hover
+  if (hoveredMilestone){
+    showFocusCard(hoveredMilestone);
+  } else {
+    hideFocusCard();
+  }
 }
 
 /* ---------- Drawing ---------- */
+
+// Give more headroom between era labels and icons
+const ERA_LABEL_Y_OFFSET = 70;     // higher = further above the line
+const MILESTONE_ICON_OFFSET = 26;  // higher = closer to the line
+
 function drawEraBands(){
   noStroke();
   textAlign(CENTER, BOTTOM);
@@ -133,18 +132,18 @@ function drawEraBands(){
     const x2 = map(e.to,   startYear, endYear, leftX, rightX);
     fill(255,255,255,12);
     rect(x1, timelineY-40, x2-x1, 80, 12);
+    // label sits higher up now for breathing room
     fill(255,255,255,160);
-    text(`${e.icon} ${e.label}`, (x1+x2)/2, timelineY-46);
+    text(`${e.icon} ${e.label}`, (x1+x2)/2, timelineY - ERA_LABEL_Y_OFFSET);
   }
 }
 
 function drawTimelineNeon(){
-  // base
   stroke(255,255,255,42); strokeWeight(8);
   line(leftX, timelineY, rightX, timelineY);
 
-  // neon segment (progress)
   const x = map(progressYear(), startYear, endYear, leftX, rightX);
+
   drawingContext.save();
   drawingContext.shadowBlur = 20;
   drawingContext.shadowColor = 'rgba(255,45,154,.95)';
@@ -152,11 +151,9 @@ function drawTimelineNeon(){
   line(leftX, timelineY, x, timelineY);
   drawingContext.restore();
 
-  // soft overglow
   stroke(255,45,154,120); strokeWeight(18);
   line(leftX, timelineY, x, timelineY);
 
-  // end labels (left/right)
   noStroke(); fill(255,255,255,190); textAlign(LEFT, TOP);
   text(`${startYear} AD — York`, leftX, timelineY+18);
   textAlign(RIGHT, TOP);
@@ -164,7 +161,9 @@ function drawTimelineNeon(){
 }
 
 function drawMilestones(){
+  hoveredMilestone = null; // will be set if we detect hover
   textAlign(CENTER, BOTTOM); textSize(16);
+
   for(const m of milestones){
     const x = map(m.year, startYear, endYear, leftX, rightX);
 
@@ -173,9 +172,15 @@ function drawMilestones(){
     line(x, timelineY-28, x, timelineY+28);
     noStroke(); fill(255); circle(x, timelineY, 7);
 
-    // icon above stem
-    fill(255);
-    text(m.icon || "•", x, timelineY-34);
+    // icon (closer to the line so it doesn't clash with era labels)
+    noStroke(); fill(255);
+    text(m.icon || "•", x, timelineY - MILESTONE_ICON_OFFSET);
+
+    // hover test (small hit box around icon/line)
+    if (abs(mouseX - x) < 14 && abs(mouseY - timelineY) < 24) {
+      hoveredMilestone = m;
+      lastAnchorX = x;
+    }
   }
 }
 
@@ -188,7 +193,6 @@ function drawProgressKnob(){
   circle(x, timelineY, 15);
   drawingContext.restore();
 
-  // triangle pointer
   fill(255,255,255,190);
   triangle(x, timelineY+15, x-6, timelineY+28, x+6, timelineY+28);
 }
@@ -214,42 +218,50 @@ function updateUI(){
   document.getElementById('kmStat').textContent = `${progressKm} / ${totalKm} km`;
   document.getElementById('yearStat').textContent = `${year} CE`;
   document.getElementById('walkersStat').textContent = walkers;
-
-  // debug block
-  document.getElementById('dbgKm').textContent = progressKm;
-  document.getElementById('dbgYear').textContent = year;
-  const px = Math.round(map(year, startYear, endYear, leftX, rightX));
-  document.getElementById('dbgPx').textContent = px;
-
   localStorage.setItem(STORAGE_KEY, String(progressKm));
-  updateFocusCard();
 }
 
-function nearestMilestone(y){
-  let best = null, bestDist = 1e9;
-  for (const m of milestones){
-    const d = Math.abs(m.year - y);
-    if (d < bestDist){ best = m; bestDist = d; }
-  }
-  return best;
-}
+/* ---------- Focus card (hover only) ---------- */
+function showFocusCard(m){
+  const card   = document.getElementById('focusCard');
+  const header = document.querySelector('.topbar');
+  const holder = document.getElementById('canvas-holder');
 
-function updateFocusCard(){
-  const y = Math.round(progressYear());
-  const m = nearestMilestone(y);
-  const card = document.getElementById('focusCard');
-  document.getElementById('focusYear').textContent = m.year;
-  document.getElementById('focusTitle').textContent = `— ${m.label}`;
-  document.getElementById('focusCaption').textContent = m.caption || '';
+  // populate
+  document.getElementById('focusYear').textContent   = m.year;
+  document.getElementById('focusTitle').textContent  = `— ${m.label}`;
+  document.getElementById('focusCaption').textContent= m.caption || '';
   const media = document.getElementById('focusMedia');
   media.style.backgroundImage = m.image ? `url('${m.image}')` : 'none';
+
+  // show to measure
   card.classList.remove('hidden');
+  card.style.display = 'block';
+
+  // anchor to hovered milestone
+  const headerBottom = header ? header.getBoundingClientRect().bottom + window.scrollY : 0;
+  const holderRect   = holder.getBoundingClientRect();
+  const cardW = card.offsetWidth;
+  const cardH = card.offsetHeight;
+
+  // anchor X is lastAnchorX (canvas space) -> convert to page X
+  const anchorPageX = holderRect.left + window.scrollX + lastAnchorX;
+  const desiredLeft = anchorPageX - cardW/2;
+  const clampedLeft = Math.min(Math.max(12, desiredLeft), window.innerWidth - cardW - 12);
+
+  // sit above the line with headroom from header
+  const linePageY   = holderRect.top + window.scrollY + timelineY;
+  const desiredTop  = linePageY - cardH - 18;
+  const clampedTop  = Math.max(headerBottom + 12, desiredTop);
+
+  card.style.left = `${clampedLeft}px`;
+  card.style.top  = `${clampedTop}px`;
 }
 
-function positionFocusCard(){
-  const holder = document.getElementById('canvas-holder');
-  const rect = holder.getBoundingClientRect();
-  const card  = document.getElementById('focusCard');
-  const top = rect.top + window.scrollY + timelineY - 190; // sit above the bar
-  card.style.top = `${top}px`;
+function hideFocusCard(){
+  const card = document.getElementById('focusCard');
+  if (!card.classList.contains('hidden')) {
+    card.classList.add('hidden');
+    card.style.display = 'none';
+  }
 }
