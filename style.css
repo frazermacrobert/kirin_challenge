@@ -106,5 +106,11 @@ main{padding:16px 14px 140px}
   padding:10px 14px; border-radius:12px; cursor:pointer;
 }
 
+/* Flicker: extremely subtle, only on glow elements */
+@keyframes neonPulse { 0%,100%{opacity:1} 50%{opacity:.97} }
+.focus{ animation: neonPulse 3.5s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce){ .focus{ animation:none; } }
+
+
 /* A11y helper */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
