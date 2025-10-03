@@ -5,39 +5,87 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Memory Walk — Kirin</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- p5.js for simple drawing & interaction -->
+  <!-- p5.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.3/p5.min.js" defer></script>
   <script src="sketch.js" defer></script>
 </head>
 <body>
-  <header class="site-header">
-    <h1>Memory Walk — Kirin</h1>
-    <div class="stats" aria-live="polite">
-      <span id="kmStat">0 / 0 km</span>
-      <span id="yearStat">Current year —</span>
+  <!-- Neon radial background -->
+  <div class="bg"></div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo"><span>🐎</span></div>
+      <h1>Memory Walk</h1>
     </div>
-    <div class="hint">Use ← / → to step. Hover milestones.</div>
+
+    <!-- Glassy HUD (top-right) -->
+    <aside class="hud" aria-live="polite">
+      <div class="row">
+        <span class="k">Group progress</span>
+        <span id="kmStat" class="v">0 / 0 km</span>
+      </div>
+      <div class="row">
+        <span class="k">Current year</span>
+        <span id="yearStat" class="v">—</span>
+      </div>
+      <div class="row">
+        <span class="k">Walkers</span>
+        <span id="walkersStat" class="v">10</span>
+      </div>
+    </aside>
   </header>
 
   <main>
-    <!-- p5 canvas renders the timeline -->
-    <div id="canvas-holder"></div>
+    <div id="canvas-holder" aria-label="Timeline canvas"></div>
+
+    <!-- Focused milestone card (center, neon) -->
+    <div id="focusCard" class="focus hidden" role="dialog" aria-modal="false">
+      <div class="focus-head">
+        <span id="focusYear" class="focus-year">—</span>
+        <span id="focusTitle" class="focus-title">—</span>
+      </div>
+      <div class="focus-media" id="focusMedia" aria-hidden="true"></div>
+      <div class="focus-caption" id="focusCaption">—</div>
+      <div class="focus-meter">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+    </div>
+
+    <!-- QR tile / debug (bottom-right) -->
+    <div class="qr-tile">
+      <div class="qr"></div>
+      <div class="dbg">
+        <div>progressKm: <span id="dbgKm">0</span></div>
+        <div>progressYear: <span id="dbgYear">—</span></div>
+        <div>pike: <span id="dbgPx">—</span></div>
+      </div>
+    </div>
   </main>
 
-  <!-- Controls -->
-  <div class="controls">
-    <label for="kmSlider" class="sr-only">Progress in kilometers</label>
-    <input id="kmSlider" type="range" min="0" step="1" aria-label="Progress in kilometers" />
-    <div class="control-buttons">
-      <button id="decBtn" aria-label="Minus one kilometer">−</button>
-      <button id="incBtn" aria-label="Plus one kilometer">+</button>
+  <!-- Bottom toolbar -->
+  <form id="toolbar" class="toolbar" autocomplete="off">
+    <div class="keys">
+      <span class="pill">←</span>
+      <span>1 − to step</span>
+      <span class="pill">→</span>
     </div>
-  </div>
 
-  <!-- Milestone popover -->
-  <div id="popover" class="popover hidden" role="dialog" aria-modal="false" aria-live="polite">
-    <div class="pop-title" id="popTitle"></div>
-    <div class="pop-body" id="popBody"></div>
-  </div>
+    <div class="sim">
+      <button type="button" id="simBtn" class="soft">Sim slider</button>
+      <div class="nudge">
+        <button type="button" id="decBtn" aria-label="Minus one kilometer">−</button>
+        <button type="button" id="incBtn" aria-label="Plus one kilometer">+</button>
+      </div>
+      <input id="kmSlider" type="range" min="0" step="1" aria-label="Scrub progress along the timeline" />
+    </div>
+
+    <div class="add">
+      <label for="addInput">Add km</label>
+      <input id="addInput" type="number" step="1" inputmode="numeric" placeholder="+10 or -3" />
+      <button type="submit" class="primary">Submit</button>
+      <button type="button" id="resetBtn" class="ghost">Reset</button>
+    </div>
+  </form>
 </body>
 </html>
