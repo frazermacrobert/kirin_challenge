@@ -53,7 +53,14 @@ html,body{margin:0;padding:0;background:#0a0b10;color:var(--ink);
 
 /* Stage */
 main{padding:16px 14px 140px}
-#canvas-holder{border-radius:20px; overflow:hidden; background:rgba(9,10,18,.35); box-shadow: var(--shadow)}
+#canvas-holder{
+  border-radius: 20px;
+  background: rgba(9,10,18,.14);          /* was .35 (or a solid/gradient) */
+  backdrop-filter: blur(6px) saturate(115%);
+  border: 1px solid rgba(255,255,255,.06);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
 
 /* Focus card — no centering via CSS; JS positions it near the anchor milestone */
 .focus{
