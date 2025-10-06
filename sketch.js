@@ -10,22 +10,23 @@ const STORAGE_KEY = 'kirin_progress_km_ui_fixes';
 
 // Milestones (same list as before, image optional)
 const milestones = [
-  { year:71,   label:"Eboracum founded",           icon:"🏛️", caption:"York begins.", image:"" },
-  { year:208,  label:"Death of Septimius Severus", icon:"🪦", caption:"Power shifts in the North.", image:"" },
-  { year:306,  label:"Constantine proclaimed",     icon:"👑", caption:"A turning point for empire and faith.", image:"" },
-  { year:627,  label:"First York Minster",         icon:"⛪", caption:"Foundations of worship and wonder.", image:"" },
-  { year:866,  label:"Viking Invasion",            icon:"🛶", caption:"Granddad’s dock stories.", image:"" },
-  { year:1068, label:"York Castle built",          icon:"🏰", caption:"Stone, strategy, and a new order.", image:"" },
-  { year:1212, label:"Minster fire",               icon:"🔥", caption:"Rebuilding resilience.", image:"assets/1212.png" },
-  { year:1349, label:"Black Death",                icon:"☠️", caption:"Empty streets and echoes.", image:"" },
-  { year:1485, label:"Wars of the Roses end",      icon:"🌹", caption:"The city’s fortunes change again.", image:"" },
-  { year:1644, label:"Siege of York",              icon:"🛡️", caption:"Holding the line in civil war.", image:"" },
-  { year:1839, label:"Railway station opens",      icon:"🚂", caption:"York accelerates.", image:"" },
-  { year:1932, label:"Chocolate Orange launched",  icon:"🍫", caption:"A sweet spot in history.", image:"" },
-  { year:1984, label:"Jorvik Centre opens",        icon:"🛶", caption:"Dig, discover, delight.", image:"" },
-  { year:2001, label:"Fairtrade City",             icon:"🤝", caption:"Doing business better.", image:"" },
-  { year:2025, label:"Challenge complete!",        icon:"🎉", caption:"You made it to the present day!", image:"" }
+  { year:71,   label:"Eboracum founded",           icon:"🏛️", caption:"The Romans established the fortress of Eboracum at the confluence of the Ouse and Foss—foundations of today’s York. Learn more: https://en.wikipedia.org/wiki/Eboracum", image:"" },
+  { year:208,  label:"Death of Septimius Severus", icon:"🪦", caption:"Roman emperor Septimius Severus died in York while campaigning in Britain, briefly making the city an imperial power base. Learn more: https://en.wikipedia.org/wiki/Septimius_Severus#Death_and_succession", image:"" },
+  { year:306,  label:"Constantine proclaimed",     icon:"👑", caption:"In Eboracum, Constantine was hailed emperor by his father’s troops—an event that helped set Rome (and later Europe) on a path toward Christianisation. Learn more: https://en.wikipedia.org/wiki/Constantine_the_Great#Accession", image:"" },
+  { year:627,  label:"First York Minster",         icon:"⛪", caption:"King Edwin’s baptism led to a first wooden church on this site, beginning 1,300+ years of worship in York. Learn more: https://en.wikipedia.org/wiki/York_Minster#Early_history", image:"" },
+  { year:866,  label:"Viking Invasion",            icon:"🛶", caption:"The Great Heathen Army captured York and renamed it Jórvík, turning it into a bustling Viking trading hub. Learn more: https://en.wikipedia.org/wiki/J%C3%B3rv%C3%ADk", image:"" },
+  { year:1068, label:"York Castle built",          icon:"🏰", caption:"William the Conqueror raised a motte-and-bailey at York—precursor to Clifford’s Tower—to secure Norman control. Learn more: https://en.wikipedia.org/wiki/York_Castle", image:"" },
+  { year:1212, label:"Minster fire",               icon:"🔥", caption:"A medieval blaze damaged parts of the Minster and city, prompting phases of rebuilding in stone. Learn more: https://en.wikipedia.org/wiki/York_Minster", image:"assets/1212.png" },
+  { year:1349, label:"Black Death",                icon:"☠️", caption:"The plague hit York hard, reshaping population, labour and guild life across the city. Learn more: https://en.wikipedia.org/wiki/Black_Death_in_England", image:"" },
+  { year:1485, label:"Wars of the Roses end",      icon:"🌹", caption:"Bosworth brought Tudor rule; York’s close ties to Richard III ended and civic fortunes shifted under new royal policy. Learn more: https://en.wikipedia.org/wiki/Wars_of_the_Roses", image:"" },
+  { year:1644, label:"Siege of York",              icon:"🛡️", caption:"After the Parliamentarian victory at nearby Marston Moor, York surrendered—turning the tide in the North. Learn more: https://en.wikipedia.org/wiki/Siege_of_York", image:"" },
+  { year:1839, label:"Railway station opens",      icon:"🚂", caption:"York’s first station opened, propelling the city into the railway age and new industries. Learn more: https://en.wikipedia.org/wiki/York_railway_station", image:"" },
+  { year:1932, label:"Chocolate Orange launched",  icon:"🍫", caption:"Terry’s created the Chocolate Orange in York—a local invention that became a national favourite. Learn more: https://en.wikipedia.org/wiki/Terry%27s_Chocolate_Orange", image:"" },
+  { year:1984, label:"Jorvik Centre opens",        icon:"🛶", caption:"JORVIK brought Coppergate’s archaeology to life and re-imagined museum storytelling. Learn more: https://en.wikipedia.org/wiki/Jorvik_Viking_Centre", image:"" },
+  { year:2001, label:"Fairtrade City",             icon:"🤝", caption:"York’s fair-trade movement gathered pace; the city would go on to achieve official Fairtrade City status in 2004. Learn more: https://fairtradeyork.org.uk/fairtrade-city-status/", image:"" },
+  { year:2025, label:"Challenge complete!",        icon:"🎉", caption:"You made it to the present day—time traveller status unlocked!", image:"" }
 ];
+
 
 // Era bands (labels higher up for breathing room)
 const eras = [
