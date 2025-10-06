@@ -11,6 +11,8 @@
 <body>
   <!-- Neon background -->
   <div class="bg"></div>
+  <!-- NEW: soft glow that follows the progress knob -->
+  <div class="bg-follow" aria-hidden="true"></div>
 
   <header class="topbar">
     <div class="brand">
@@ -25,7 +27,10 @@
   </header>
 
   <main>
-    <div id="canvas-holder" aria-label="Timeline canvas"></div>
+    <div id="canvas-holder" aria-label="Timeline canvas">
+      <!-- NEW: ambient neon overlay that gently pulses during idle -->
+      <div id="ambientBar" class="progress-ambient" aria-hidden="true"></div>
+    </div>
 
     <!-- Focus card (only on hover) -->
     <div id="focusCard" class="focus hidden" role="dialog" aria-modal="false">
