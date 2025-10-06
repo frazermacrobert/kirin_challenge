@@ -1,4 +1,4 @@
-// Memory Walk — Kirin (UI fixes: no auto, hover-only card, extra spacing)
+// Memory Walk — Kirin (UI fixes + idle mode + ambient glow)
 
 let startYear = 70;
 let endYear   = 2025;
@@ -44,6 +44,43 @@ let sliderEl, decBtn, incBtn, addForm, addInput, resetBtn;
 // hover tracking
 let hoveredMilestone = null;
 let lastAnchorX = null;
+
+// ---- Idle mode -------------------------------------------------------------
+let idleTimer;
+function goIdleSoon(){
+  document.body.classList.remove('is-idle');
+  clearTimeout(idleTimer);
+  idleTimer = setTimeout(()=> document.body.classList.add('is-idle'), 15000); // 15s idle
+}
+// treat these as “activity”
+['pointermove','keydown','click','touchstart','wheel'].forEach(ev=>{
+  window.addEventListener(ev, goIdleSoon, {passive:true});
+});
+
+// ---- Ambient overlay sizing (pulses in idle) -------------------------------
+function updateAmbientBar(){
+  const bar = document.getElementById('ambientBar');
+  if (!bar) return;
+
+  const x = map(progressYear(), startYear, endYear, leftX, rightX);
+  const widthPx = Math.max(0, x - leftX);
+
+  bar.style.left = `${leftX}px`;
+  bar.style.top  = `${timelineY - 6}px`;  // center a 12px-high overlay
+  bar.style.width = `${widthPx}px`;
+}
+
+// ---- Follow-glow (moves the bg highlight under the knob) -------------------
+function updateFollowGlow(){
+  const holder = document.getElementById('canvas-holder');
+  if (!holder) return;
+  const rect = holder.getBoundingClientRect();
+  const knobX = map(progressYear(), startYear, endYear, leftX, rightX);
+  const pageX = (rect.left + knobX) / window.innerWidth * 100;
+  const pageY = (rect.top + timelineY) / window.innerHeight * 100;
+  document.documentElement.style.setProperty('--knobx', `${pageX}%`);
+  document.documentElement.style.setProperty('--knoby', `${pageY}%`);
+}
 
 function setup(){
   const holder = document.getElementById('canvas-holder');
@@ -92,7 +129,10 @@ function setup(){
 
   resetBtn.addEventListener('click', () => { progressKm = 0; syncControls(); updateUI(); });
 
-  updateUI();
+  // Start idle detector and initial glow
+  goIdleSoon();
+  updateUI();           // writes stats + localStorage + glow + ambient bar
+  updateAmbientBar();   // ensure ambient overlay positioned right away
 }
 
 function windowResized(){
@@ -100,6 +140,8 @@ function windowResized(){
   resizeCanvas(w, height);
   leftX  = 60;
   rightX = width - 60;
+  updateAmbientBar();
+  updateFollowGlow();
 }
 
 function draw(){
@@ -117,14 +159,13 @@ function draw(){
   }
 }
 
-// in setup() or once on load
+// Parallax hotspot for the big gradient
 document.addEventListener('pointermove', (e)=>{
   const x = (e.clientX / innerWidth) * 100;
   const y = (e.clientY / innerHeight) * 100;
   document.documentElement.style.setProperty('--gx', `${x}%`);
   document.documentElement.style.setProperty('--gy', `${y}%`);
-});
-
+}, {passive:true});
 
 /* ---------- Drawing ---------- */
 
@@ -228,6 +269,10 @@ function updateUI(){
   document.getElementById('yearStat').textContent = `${year} CE`;
   document.getElementById('walkersStat').textContent = walkers;
   localStorage.setItem(STORAGE_KEY, String(progressKm));
+
+  // keep the background glow and ambient overlay in sync
+  updateFollowGlow();
+  updateAmbientBar();
 }
 
 /* ---------- Focus card (hover only) ---------- */
