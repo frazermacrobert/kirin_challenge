@@ -65,15 +65,20 @@ html,body{margin:0;padding:0;background:#0a0b10;color:var(--ink);
 .hud .v{font-weight:700}
 
 /* Stage */
-main{padding:16px 14px 140px}
 #canvas-holder{
-  position: relative;                 /* needed for ambient overlay */
+  position: relative;
   border-radius: 20px;
-  background: rgba(9,10,18,.14);      /* lighter so the glow shows through */
-  backdrop-filter: blur(6px) saturate(115%);
-  border: 1px solid rgba(255,255,255,.06);
+  background: transparent;                     /* <- no solid backer */
   box-shadow: var(--shadow);
   overflow: hidden;
+}
+#canvas-holder::before{
+  content:"";
+  position:absolute; inset:0; border-radius: inherit; pointer-events:none;
+  /* very light darkening + a bit of blur for legibility */
+  background: linear-gradient(180deg, rgba(12,14,22,.14), rgba(12,14,22,.08));
+  border: 1px solid rgba(255,255,255,.06);
+  backdrop-filter: blur(6px) saturate(115%);
 }
 
 /* Ambient neon overlay that pulses during idle */
