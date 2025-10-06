@@ -10,20 +10,33 @@
   --radius:18px;
   --shadow:0 12px 40px rgba(0,0,0,.45), 0 2px 10px rgba(0,0,0,.3);
   --blur: blur(8px);
+
+  /* parallax/idle positions */
+  --gx:50%;
+  --gy:55%;
+  --knobx:50%;
+  --knoby:60%;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;background:#0a0b10;color:var(--ink);
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial}
 
-/* Richer neon/amber background to match the vision */
+/* Rich neon/amber background with parallax hotspot */
 .bg{
   position:fixed; inset:0; pointer-events:none; z-index:-1;
   background:
-    radial-gradient(900px 520px at 18% 35%, rgba(255,150,40,.35), transparent 60%),
+    radial-gradient(900px 520px at var(--gx) var(--gy), rgba(255,150,40,.35), transparent 60%),
     radial-gradient(1100px 640px at 58% 55%, var(--neon-soft), transparent 62%),
     radial-gradient(700px 420px at 82% 78%, rgba(255,45,154,.18), transparent 70%),
     linear-gradient(180deg, var(--bg1), var(--bg2));
   filter: saturate(115%) contrast(105%);
+  will-change: transform;
+}
+/* glow that follows the progress knob */
+.bg-follow{
+  position:fixed; inset:0; pointer-events:none; z-index:-1;
+  background: radial-gradient(420px 240px at var(--knobx) var(--knoby), rgba(255,45,154,.35), transparent 60%);
+  mix-blend-mode: screen;
 }
 
 /* Top bar */
@@ -54,15 +67,31 @@ html,body{margin:0;padding:0;background:#0a0b10;color:var(--ink);
 /* Stage */
 main{padding:16px 14px 140px}
 #canvas-holder{
+  position: relative;                 /* needed for ambient overlay */
   border-radius: 20px;
-  background: rgba(9,10,18,.14);          /* was .35 (or a solid/gradient) */
+  background: rgba(9,10,18,.14);      /* lighter so the glow shows through */
   backdrop-filter: blur(6px) saturate(115%);
   border: 1px solid rgba(255,255,255,.06);
   box-shadow: var(--shadow);
   overflow: hidden;
 }
 
-/* Focus card — no centering via CSS; JS positions it near the anchor milestone */
+/* Ambient neon overlay that pulses during idle */
+.progress-ambient{
+  position:absolute; left:0; top:0; height:12px; border-radius:999px;
+  pointer-events:none; z-index:2;
+  background: linear-gradient(90deg,
+    rgba(255,45,154,0.00),
+    rgba(255,45,154,0.40) 30%,
+    rgba(255,45,154,0.95) 50%,
+    rgba(255,45,154,0.40) 70%,
+    rgba(255,45,154,0.00));
+  filter: blur(4px);
+  opacity: 0;                         /* shown only when body.has .is-idle */
+  transform-origin:left center;
+}
+
+/* Focus card — JS positions it near the anchor milestone */
 .focus{
   position:absolute; left:0; top:0; transform:none; width:min(380px,92vw);
   background:linear-gradient(180deg, #191b27, #121523);
@@ -113,22 +142,45 @@ main{padding:16px 14px 140px}
   padding:10px 14px; border-radius:12px; cursor:pointer;
 }
 
-/* Flicker: extremely subtle, only on glow elements */
+/* Subtle flicker on the focus card only */
 @keyframes neonPulse { 0%,100%{opacity:1} 50%{opacity:.97} }
 .focus{ animation: neonPulse 3.5s ease-in-out infinite; }
-@media (prefers-reduced-motion: reduce){ .focus{ animation:none; } }
 
-/* Use CSS vars for hotspot positions */
-:root{ --gx:50%; --gy:55%; }
-.bg{
-  background:
-    radial-gradient(900px 520px at calc(var(--gx)) calc(var(--gy)), rgba(255,150,40,.35), transparent 60%),
-    radial-gradient(1100px 640px at 60% 55%, rgba(255,45,154,.45), transparent 62%),
-    linear-gradient(180deg, #130e18, #0b0f19);
-  filter: saturate(115%) contrast(105%);
+/* Idle mode animations (background drift + ambient pulse) */
+body.is-idle .progress-ambient{
+  opacity: 1;
+  animation: pulse 3.6s ease-in-out infinite;
+}
+body.is-idle .bg{
+  animation: drift 60s ease-in-out infinite alternate;
+}
+body.is-idle .bg-follow{
+  animation: glowFloat 8s ease-in-out infinite;
 }
 
+@keyframes pulse{
+  0%,100%{ filter: blur(4px); transform: scaleY(1); }
+  50%    { filter: blur(6px); transform: scaleY(1.12); }
+}
+@keyframes drift{
+  0%   { transform: translate3d(-1%, -1%, 0) scale(1.02); }
+  100% { transform: translate3d( 1%,  1%, 0) scale(1.06); }
+}
+@keyframes glowFloat{
+  0%,100%{ opacity:.55; transform: translateY(0) scale(1); }
+  50%    { opacity:.78; transform: translateY(-2%) scale(1.03); }
+}
 
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .focus{ animation:none; }
+  body.is-idle .progress-ambient,
+  body.is-idle .bg,
+  body.is-idle .bg-follow { animation: none; }
+}
 
 /* A11y helper */
-.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
+  clip:rect(0,0,0,0);white-space:nowrap;border:0
+}
